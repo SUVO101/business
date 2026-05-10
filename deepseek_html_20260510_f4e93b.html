@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Meesho Profit Calculator | Smart Seller Tool</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #e9f0f5 0%, #d9e2ec 100%);
+      min-height: 100vh;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* main card container */
+    .calculator-card {
+      max-width: 780px;
+      width: 100%;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 2rem;
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    /* header */
+    .calc-header {
+      background: #2d3e50;
+      background: linear-gradient(135deg, #1e2f3f 0%, #1b2a38 100%);
+      padding: 1.5rem 1.8rem;
+      color: white;
+    }
+
+    .calc-header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .calc-header h1:before {
+      content: "📊";
+      font-size: 1.8rem;
+    }
+
+    .calc-header p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 0.5rem;
+    }
+
+    /* form / result area */
+    .calc-body {
+      padding: 1.8rem 1.8rem 2rem;
+    }
+
+    /* two-column grid for inputs */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem 1.5rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .input-group label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #2c3e4e;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .label-hint {
+      font-weight: normal;
+      font-size: 0.7rem;
+      background: #eef2f5;
+      padding: 0.2rem 0.5rem;
+      border-radius: 40px;
+      color: #2c6e9e;
+    }
+
+    input, select {
+      background: #f9fcff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 0.7rem 1rem;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #1a2c3c;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+      background: white;
+    }
+
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button, 
+    input[type="number"]::-webkit-outer-spin-button {
+      opacity: 0.5;
+    }
+
+    /* inline optional row */
+    .inline-hint {
+      font-size: 0.7rem;
+      color: #6f8eac;
+      margin-top: 0.2rem;
+    }
+
+    /* results panel */
+    .results-panel {
+      background: #f1f6fa;
+      border-radius: 1.5rem;
+      padding: 1.3rem 1.5rem;
+      margin: 1.6rem 0 1rem;
+      box-shadow: inset 0 1px 2px #00000008, 0 6px 12px -6px rgba(0,0,0,0.1);
+    }
+
+    .profit-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #cbdde9;
+      padding: 0.7rem 0;
+    }
+
+    .profit-row:last-child {
+      border-bottom: none;
+    }
+
+    .profit-label {
+      font-weight: 600;
+      color: #1e3a5f;
+      font-size: 1rem;
+    }
+
+    .profit-value {
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -0.2px;
+    }
+
+    .net-profit {
+      background: #dff0fe;
+      margin-top: 0.5rem;
+      border-radius: 1.2rem;
+      padding: 0.7rem 1rem;
+    }
+
+    .net-profit .profit-label {
+      font-size: 1.1rem;
+    }
+
+    .net-profit .profit-value {
+      font-size: 1.8rem;
+      color: #0f3b2c;
+    }
+
+    .text-negative {
+      color: #c2410c;
+    }
+
+    .text-positive {
+      color: #15803d;
+    }
+
+    /* alert message area */
+    .alert-message {
+      background: #fff6e5;
+      border-left: 5px solid #f59e0b;
+      padding: 0.8rem 1.2rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #9b4d00;
+      margin: 1rem 0 0.2rem;
+      transition: all 0.2s;
+    }
+
+    /* button */
+    .refresh-btn {
+      background: #2d3e50;
+      border: none;
+      width: 100%;
+      padding: 0.9rem;
+      border-radius: 2rem;
+      font-weight: 700;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .refresh-btn:hover {
+      background: #1f2f3e;
+      transform: scale(0.98);
+    }
+
+    /* responsive touches */
+    @media (max-width: 580px) {
+      body {
+        padding: 0.8rem;
+      }
+      .calc-body {
+        padding: 1.2rem;
+      }
+      .profit-value {
+        font-size: 1.2rem;
+      }
+      .net-profit .profit-value {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* tooltip style for gst select */
+    .badge-gst {
+      background: #eef2ff;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="calculator-card">
+  <div class="calc-header">
+    <h1>Meesho Profit Analyzer</h1>
+    <p>Real-time P&L · GST/TDS/TCS · Influencer & Ads</p>
+  </div>
+
+  <div class="calc-body">
+    <form id="profitForm">
+      <div class="form-grid">
+        <!-- Meesho Selling Price (MSP) -->
+        <div class="input-group">
+          <label>💰 Meesho Selling Price (MSP) <span class="label-hint">₹</span></label>
+          <input type="number" id="msp" value="100" step="1">
+        </div>
+        <!-- Product Costing -->
+        <div class="input-group">
+          <label>🏭 Product Costing <span class="label-hint">₹</span></label>
+          <input type="number" id="productCost" value="50" step="1">
+        </div>
+        <!-- Packing Cost -->
+        <div class="input-group">
+          <label>📦 Packing Cost <span class="label-hint">₹</span></label>
+          <input type="number" id="packingCost" value="5" step="0.5">
+        </div>
+        <!-- Shipping Charges (Optional) -->
+        <div class="input-group">
+          <label>🚚 Shipping Charges (Optional) <span class="label-hint">₹</span></label>
+          <input type="number" id="shipping" value="0" step="1">
+        </div>
+        <!-- Promotion % (on MSP) -->
+        <div class="input-group">
+          <label>📢 Promotion % (on MSP) <span class="label-hint">%</span></label>
+          <input type="number" id="promoPercent" value="0" step="0.5">
+        </div>
+        <!-- Influencer % (on MSP) -->
+        <div class="input-group">
+          <label>🎥 Influencer % (on MSP) <span class="label-hint">%</span></label>
+          <input type="number" id="influencerPercent" value="0" step="0.5">
+        </div>
+        <!-- C.R Loss per Product (Mandatory) -->
+        <div class="input-group">
+          <label>⚠️ C.R Loss per Product (Mandatory) <span class="label-hint">₹</span></label>
+          <input type="number" id="crLoss" value="20" step="1">
+        </div>
+        <!-- Ads Cost per Product -->
+        <div class="input-group">
+          <label>📈 Ads Cost per Product <span class="label-hint">₹</span></label>
+          <input type="number" id="adsCost" value="0" step="1">
+        </div>
+      </div>
+
+      <!-- Second row: GST, TDS, TCS with select box for GST & percents -->
+      <div class="form-grid">
+        <!-- GST % (on MSP) - SELECT BOX 5,12,18 etc -->
+        <div class="input-group">
+          <label>🧾 GST % (on MSP) <span class="label-hint">Select rate</span></label>
+          <select id="gstPercentSelect">
+            <option value="5" selected>5% (Standard)</option>
+            <option value="12">12%</option>
+            <option value="18">18%</option>
+            <option value="0">0% (Exempt)</option>
+          </select>
+        </div>
+        <!-- TDS % (on MSP - GST) -->
+        <div class="input-group">
+          <label>📑 TDS % (on MSP - GST) <span class="label-hint">%</span></label>
+          <input type="number" id="tdsPercent" value="0.1" step="0.05">
+        </div>
+        <!-- TCS % (on MSP - GST) -->
+        <div class="input-group">
+          <label>🪙 TCS % (on MSP - GST) <span class="label-hint">%</span></label>
+          <input type="number" id="tcsPercent" value="0.5" step="0.1">
+        </div>
+        <!-- Hidden display fields? not needed we show calculated amounts -->
+      </div>
+
+      <div class="results-panel" id="resultsArea">
+        <div class="profit-row">
+          <span class="profit-label">GST Amount (₹) :</span>
+          <span class="profit-value" id="gstAmountVal">0.00</span>
+        </div>
+        <div class="profit-row">
+          <span class="profit-label">TDS Amount (₹) :</span>
+          <span class="profit-value" id="tdsAmountVal">0.00</span>
+        </div>
+        <div class="profit-row">
+          <span class="profit-label">TCS Amount (₹) :</span>
+          <span class="profit-value" id="tcsAmountVal">0.00</span>
+        </div>
+        <div class="profit-row">
+          <span class="profit-label">📋 Total Expenses :</span>
+          <span class="profit-value" id="totalExpenseVal">0.00</span>
+        </div>
+        <div class="profit-row net-profit">
+          <span class="profit-label">✅ Net Profit per Product :</span>
+          <span class="profit-value" id="netProfitVal">0.00</span>
+        </div>
+      </div>
+
+      <!-- Alert message dynamic -->
+      <div id="alertBox" class="alert-message">
+        💡 Fill all fields correctly — profit will update live.
+      </div>
+      
+      <button type="button" id="showAlertBtn" class="refresh-btn">⟳ Recalculate & Show Alert</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // DOM elements
+  const mspInput = document.getElementById('msp');
+  const productCostInput = document.getElementById('productCost');
+  const packingCostInput = document.getElementById('packingCost');
+  const shippingInput = document.getElementById('shipping');
+  const promoPercentInput = document.getElementById('promoPercent');
+  const influencerPercentInput = document.getElementById('influencerPercent');
+  const crLossInput = document.getElementById('crLoss');
+  const adsCostInput = document.getElementById('adsCost');
+  const gstSelect = document.getElementById('gstPercentSelect');
+  const tdsPercentInput = document.getElementById('tdsPercent');
+  const tcsPercentInput = document.getElementById('tcsPercent');
+
+  // result spans
+  const gstAmountSpan = document.getElementById('gstAmountVal');
+  const tdsAmountSpan = document.getElementById('tdsAmountVal');
+  const tcsAmountSpan = document.getElementById('tcsAmountVal');
+  const totalExpenseSpan = document.getElementById('totalExpenseVal');
+  const netProfitSpan = document.getElementById('netProfitVal');
+  const alertMessageDiv = document.getElementById('alertBox');
+
+  // helper to parse numbers safely
+  function parseNum(value, defaultValue = 0) {
+    let parsed = parseFloat(value);
+    return isNaN(parsed) ? defaultValue : parsed;
+  }
+
+  // Core calculation function that returns all derived values
+  function calculateAll() {
+    // get raw inputs
+    const msp = parseNum(mspInput.value, 0);
+    const productCost = parseNum(productCostInput.value, 0);
+    const packingCost = parseNum(packingCostInput.value, 0);
+    const shipping = parseNum(shippingInput.value, 0);
+    const promoPercent = parseNum(promoPercentInput.value, 0);
+    const influencerPercent = parseNum(influencerPercentInput.value, 0);
+    const crLoss = parseNum(crLossInput.value, 0);
+    const adsCost = parseNum(adsCostInput.value, 0);
+    
+    // GST, TDS, TCS %
+    const gstPercent = parseFloat(gstSelect.value);
+    const tdsPercent = parseNum(tdsPercentInput.value, 0);
+    const tcsPercent = parseNum(tcsPercentInput.value, 0);
+    
+    // --- GST Amount = (MSP * GST%) / 100
+    const gstAmount = (msp * gstPercent) / 100;
+    
+    // Base for TDS/TCS: (MSP - GST Amount) as per problem statement: TDS % (on MSP-GST)
+    const taxableBaseForDeductions = msp - gstAmount;
+    const tdsAmount = (taxableBaseForDeductions * tdsPercent) / 100;
+    const tcsAmount = (taxableBaseForDeductions * tcsPercent) / 100;
+    
+    // Promotion & influencer costs (on MSP)
+    const promotionCost = (msp * promoPercent) / 100;
+    const influencerCost = (msp * influencerPercent) / 100;
+    
+    // Total expense = Product Costing + Packing Cost + Shipping + C.R Loss + Ads Cost + Promotion + Influencer + GST + TDS + TCS
+    // Note: GST, TDS, TCS are expenses from seller perspective (GST output, TDS deducted etc)
+    let totalExpense = productCost + packingCost + shipping + crLoss + adsCost + promotionCost + influencerCost + gstAmount + tdsAmount + tcsAmount;
+    
+    let netProfit = msp - totalExpense;
+    
+    // round to 2 decimals
+    const round2 = (num) => Math.round(num * 100) / 100;
+    
+    const result = {
+      msp: round2(msp),
+      gstAmount: round2(gstAmount),
+      tdsAmount: round2(tdsAmount),
+      tcsAmount: round2(tcsAmount),
+      totalExpense: round2(totalExpense),
+      netProfit: round2(netProfit),
+      promotionCost: round2(promotionCost),
+      influencerCost: round2(influencerCost),
+      productCost,
+      packingCost,
+      shipping,
+      crLoss,
+      adsCost,
+      gstPercent,
+      tdsPercent,
+      tcsPercent,
+      taxableBase: round2(taxableBaseForDeductions)
+    };
+    return result;
+  }
+  
+  // update UI with latest calculations and also dynamic alert message
+  function updateUI() {
+    const calc = calculateAll();
+    
+    // update displayed amounts
+    gstAmountSpan.innerText = `₹ ${calc.gstAmount.toFixed(2)}`;
+    tdsAmountSpan.innerText = `₹ ${calc.tdsAmount.toFixed(2)}`;
+    tcsAmountSpan.innerText = `₹ ${calc.tcsAmount.toFixed(2)}`;
+    totalExpenseSpan.innerText = `₹ ${calc.totalExpense.toFixed(2)}`;
+    
+    // net profit styling
+    const netProfitVal = calc.netProfit;
+    netProfitSpan.innerText = `₹ ${netProfitVal.toFixed(2)}`;
+    if (netProfitVal >= 0) {
+      netProfitSpan.classList.remove('text-negative');
+      netProfitSpan.classList.add('text-positive');
+    } else {
+      netProfitSpan.classList.remove('text-positive');
+      netProfitSpan.classList.add('text-negative');
+    }
+    
+    // Build custom alert message based on profit and edge cases (popup also will show similar)
+    let alertMsg = "";
+    if (netProfitVal < 0) {
+      alertMsg = `⚠️ ALERT: Negative Profit! You are losing ₹${Math.abs(netProfitVal).toFixed(2)} per product. Review costs or MSP.`;
+    } else if (netProfitVal === 0) {
+      alertMsg = `⚠️ Break-Even: Net profit is zero. Consider increasing margin.`;
+    } else if (netProfitVal > 0 && netProfitVal < 10) {
+      alertMsg = `📉 Low Profit Margin: ₹${netProfitVal.toFixed(2)} profit per product. Optimize expenses.`;
+    } else if (netProfitVal >= 10 && netProfitVal < 30) {
+      alertMsg = `✅ Healthy Profit: ₹${netProfitVal.toFixed(2)} net profit per product. Keep tracking!`;
+    } else if (netProfitVal >= 30) {
+      alertMsg = `🚀 Excellent Profit! ₹${netProfitVal.toFixed(2)} profit per item. Great strategy.`;
+    } else {
+      alertMsg = `📊 Net Profit: ₹${netProfitVal.toFixed(2)}. Monitor metrics regularly.`;
+    }
+    
+    // Additional info if any extreme input: high promotion/influencer
+    if (calc.promotionCost > calc.msp * 0.2 && calc.msp > 0) {
+      alertMsg += ` | High promotion spend (${(calc.promotionCost/calc.msp*100).toFixed(1)}% of MSP).`;
+    }
+    if (calc.influencerCost > calc.msp * 0.15 && calc.msp > 0) {
+      alertMsg += ` | Influencer cost is high.`;
+    }
+    
+    alertMessageDiv.innerHTML = `💡 ${alertMsg}`;
+    
+    return calc; // return for optional popup usage
+  }
+  
+  // show popup alert based on current calculations (same as message but more detailed)
+  function showPopupAlert() {
+    const calc = calculateAll();
+    const netProfit = calc.netProfit;
+    const totalExp = calc.totalExpense;
+    const mspVal = calc.msp;
+    
+    let profitStatus = netProfit >= 0 ? `POSITIVE ✅` : `NEGATIVE ❌`;
+    let alertTitle = "📢 Meesho Profit Summary";
+    let detailedMsg = `MSP: ₹${calc.msp.toFixed(2)} | Total Expense: ₹${totalExp.toFixed(2)}\n`;
+    detailedMsg += `GST: ₹${calc.gstAmount.toFixed(2)} (${calc.gstPercent}%)\n`;
+    detailedMsg += `TDS: ₹${calc.tdsAmount.toFixed(2)} (${calc.tdsPercent}%) | TCS: ₹${calc.tcsAmount.toFixed(2)} (${calc.tcsPercent}%)\n`;
+    detailedMsg += `Promotion: ₹${calc.promotionCost.toFixed(2)} | Influencer: ₹${calc.influencerCost.toFixed(2)}\n`;
+    detailedMsg += `C.R Loss: ₹${calc.crLoss.toFixed(2)} | Ads: ₹${calc.adsCost.toFixed(2)}\n`;
+    detailedMsg += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+    detailedMsg += `Net Profit per product: ₹${netProfit.toFixed(2)} (${profitStatus})\n`;
+    
+    if (netProfit < 0) {
+      detailedMsg += `🚨 Action: Increase selling price, lower product/packing cost, or optimize ads.`;
+    } else if (netProfit > 0 && netProfit < 5) {
+      detailedMsg += `⚠️ Very thin margin, consider cost reduction.`;
+    } else {
+      detailedMsg += `✨ Keep optimizing your catalog for better returns.`;
+    }
+    
+    // Use window alert as popup — but styled native, it's proper per requirement "pop up alert"
+    window.alert(`${alertTitle}\n\n${detailedMsg}`);
+  }
+  
+  // attach event listeners for all inputs to update UI in real time
+  const allInputs = [
+    mspInput, productCostInput, packingCostInput, shippingInput,
+    promoPercentInput, influencerPercentInput, crLossInput, adsCostInput,
+    tdsPercentInput, tcsPercentInput, gstSelect
+  ];
+  
+  function handleInputChange() {
+    updateUI();
+  }
+  
+  allInputs.forEach(input => {
+    input.addEventListener('input', handleInputChange);
+    input.addEventListener('change', handleInputChange);
+  });
+  
+  // Adding 'showAlertBtn' click to trigger popup alert (separate from dynamic message)
+  const alertBtn = document.getElementById('showAlertBtn');
+  alertBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    // first sync update UI to ensure latest numbers
+    updateUI();
+    // then show popup alert with fresh data
+    showPopupAlert();
+  });
+  
+  // Initial load: set defaults exactly as described and GST select box default (5%)
+  // Already pre-filled from HTML default values: MSP=100, Product=50, Packing=5, Shipping=0, Promo=0, Influencer=0, CR Loss=20, Ads=0, TDS=0.1, TCS=0.5, GST select 5%
+  // ensure any missing: current values are aligned.
+  // Additional double-check the value consistency: Shipping default 0, Ads default 0, perfect.
+  // Also set the TDS and TCS fields to .1 and .5 respectively exactly like given data.
+  // The user mentioned default values: Meesho Selling Price 100, Product Costing 50, Packing 5, Shipping 0, Promotion%0, Influencer%0, C.R Loss 20, Ads Cost 0, GST% 5 select , TDS% 0.1, TCS%0.5.
+  // Already done.
+  // Override any mismatched default from browser: set explicitly.
+  window.addEventListener('DOMContentLoaded', () => {
+    // enforce explicit values to match screenshot preview
+    mspInput.value = 100;
+    productCostInput.value = 50;
+    packingCostInput.value = 5;
+    shippingInput.value = 0;
+    promoPercentInput.value = 0;
+    influencerPercentInput.value = 0;
+    crLossInput.value = 20;
+    adsCostInput.value = 0;
+    tdsPercentInput.value = 0.1;
+    tcsPercentInput.value = 0.5;
+    // GST select is already set to option 5 by default attribute "selected"
+    // but let's ensure
+    gstSelect.value = "5";
+    // First calculation
+    updateUI();
+    // extra: verify displayed numbers match example: GST amount = 100*0.05=5 , TDS = (100-5)*0.001=0.095, TCS=(95)*0.005=0.475
+    // total expense = product 50 + packing 5 + cr loss20 =75 + GST5+TDS0.095+TCS0.475 =80.57, net profit = 19.43 perfect.
+  });
+  
+</script>
+</body>
+</html>
